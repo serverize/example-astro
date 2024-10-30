@@ -16,13 +16,10 @@ COPY . .
 RUN npm run build
 
 
-FROM base AS start
-WORKDIR /app
-COPY --from=deps /app/node_modules node_modules
+FROM nginxinc/nginx-unprivileged AS start
+WORKDIR /usr/share/nginx/html
 COPY --from=builder /app/dist .
-ENV NODE_ENV=production
-ENV HOST=0.0.0.0
-ENV PORT=3000
-USER node
-EXPOSE 3000
-CMD ["node", "server/entry.mjs"]
+ENV PORT=8080
+USER nginx
+EXPOSE 8080
+CMD ["nginx", "-g", "daemon off;"]
